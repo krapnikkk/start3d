@@ -1,0 +1,21 @@
+{
+  "name": "start3d",
+  "version": "0.0.1",
+  "description": "Let's start making a 3d renderer in WebGL!",
+  "main": "index.js",
+  "scripts": {
+    "build": "rm -rf dist && rollup -c",
+    "watch": "rollup -c --watch"
+  },
+  "keywords": [],
+  "author": "krapnik",
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-typescript": "^8.3.0",
+    "rollup": "^2.64.0",
+    "rollup-plugin-copy": "^3.4.0",
+    "rollup-plugin-ts": "^2.0.5",
+    "tslib": "^2.3.1",
+    "typescript": "^4.5.4"
+  }
+}
