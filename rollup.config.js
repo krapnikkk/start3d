@@ -1,4 +1,4 @@
-import ts from '@rollup/plugin-typescript';
+import ts from 'rollup-plugin-ts';
 import copy from 'rollup-plugin-copy'
 
 export default [
@@ -19,25 +19,14 @@ export default [
       })
     ]
   },
-  {
-    input: 'src/index.ts',
-    output: {
-      format: 'umd',
-      name: 'Start3d',
-      file: 'build/start3d.js',
-    },
-    plugins: [
-      ts(),
-    ]
-  },
-  {
-    input: 'src/index.ts',
-    output: {
-      format: 'esm',
-      file: 'build/start3d.module.js'
-    },
-    plugins: [
-      ts(),
-    ]
-  }
+  // {
+  //   input: 'src/index.ts',
+  //   output: {
+  //     format: 'esm',
+  //     file: 'build/start3d.module.js'
+  //   },
+  //   plugins: [
+  //     ts(),
+  //   ]
+  // }
 ]

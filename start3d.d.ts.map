@@ -1,0 +1,1 @@
+{"version":3,"file":"start3d.d.ts","sourceRoot":"","sources":["src/index.ts","src/gl/gl.ts","src/gl/shader.ts","src/gl/vertexFormat.ts","src/gl/vertexBuffer.ts","src/gl/indexBuffer.ts","src/gl/mesh.ts"],"names":[],"mappings":";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA,OAAO,8DAAkB,CAAgB"}
