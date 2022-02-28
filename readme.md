@@ -3,15 +3,15 @@
 ## 说在前面
 ### 本项目的定位
 
-以学习实践为目的，基于WebGl1实现的3D渲染框架。
+以学习实践为目的，基于WebGl1实现的3D渲染器[renderer]。
 
 开发计划线路如下：
 
 ![开发计划线路](http://assets.processon.com/chart_image/61de9348e401fd06a8c75cc5.png)
 
 
-### 为什么想要开发这么一个库
-一开始学习WebGL是在2020年，断断续续地把《WebGL编程指南》敲了两遍，但是对里面的一些概念和内容未能有很好的实践。想着总有一天会实践落地，那么就是今天吧。
+### 起因
+一开始学习WebGL是在2020年，断断续续地把《WebGL编程指南》和learnopengl都敲了一遍，但是对里面的一些概念和内容未能有很好的实践。想着总有一天会实践落地，那么就是今天吧。
 
 ```
 “The best time to plant a tree is 20 years ago. The second-best time is now.”
@@ -19,8 +19,8 @@
 
 ```
 
-### 构建方案选型：ts+esm
-ecmascript的模块管理方案比较多，直到es6才出现了官方规范：ESM模块化，本项目最终打包导出的结果将会是一个umd和esm的文件。
+### 构建打包：ts+esm
+ecmascript的模块管理方案比较多，直到es6才出现了官方规范：ESM模块化，本项目使用rollup打包导出umd和esm模块的文件。
 
 ### 项目目录结构
 ```
@@ -39,8 +39,8 @@ ecmascript的模块管理方案比较多，直到es6才出现了官方规范：E
     - texture // 纹理相关
     -    
 ```
-### 打包构建方式
-rollup
+
+## 开发日志
 
 
 
