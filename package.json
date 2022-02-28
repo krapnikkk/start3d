@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "build": "rm -rf dist && rollup -c",
-    "watch": "rollup -c --watch"
+    "watch": "rollup -c --watch",
+    "uml":"tsviz-cli src/ diagran.png"
   },
   "keywords": [],
   "author": "krapnik",

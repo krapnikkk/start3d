@@ -7,7 +7,7 @@ export default [
     output: {
       format: 'umd',
       name: 'Start3d',
-      file: 'dist/start3d.js',
+      file: 'dist/start3d.umd.js',
       sourcemap: true
     },
     plugins: [
@@ -19,14 +19,16 @@ export default [
       })
     ]
   },
-  // {
-  //   input: 'src/index.ts',
-  //   output: {
-  //     format: 'esm',
-  //     file: 'build/start3d.module.js'
-  //   },
-  //   plugins: [
-  //     ts(),
-  //   ]
-  // }
+  {
+    input: 'src/index.ts',
+    output: {
+      format: 'esm',
+      name: 'Start3d',
+      file: 'build/start3d.module.js',
+      sourcemap: true
+    },
+    plugins: [
+      ts(),
+    ]
+  }
 ]
