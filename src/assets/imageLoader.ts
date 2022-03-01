@@ -22,10 +22,11 @@ export class ImageAssetLoader implements IAssetLoader {
         return ["png", "jpg", "jpeg"];
     }
 
-    loadAsset(assetName: string,onComplete:(IAsset)=>{}): void {
+    loadAsset(assetName: string,onComplete:(res:IAsset)=>{}): void {
         let image: HTMLImageElement = new Image();
         image.onload = ()=>{
             let asset = new ImageAsset(assetName,image);
+            AssetManager.onAssetLoaded(asset);
             onComplete(asset);
         };
         image.src = assetName;

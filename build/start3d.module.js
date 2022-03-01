@@ -995,5 +995,251 @@ var Vector3 = /** @class */ (function () {
     return Vector3;
 }());
 
-export { Matrix4, Mesh, Shader, Vector3, VertexBuffer, VertexFormat, VertexSemantic, canvas, gl, init };
+/*! *****************************************************************************
+Copyright (c) Microsoft Corporation.
+
+Permission to use, copy, modify, and/or distribute this software for any
+purpose with or without fee is hereby granted.
+
+THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
+REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
+AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
+INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
+LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
+OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
+PERFORMANCE OF THIS SOFTWARE.
+***************************************************************************** */
+/* global Reflect, Promise */
+
+var extendStatics = function(d, b) {
+    extendStatics = Object.setPrototypeOf ||
+        ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+        function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+    return extendStatics(d, b);
+};
+
+function __extends(d, b) {
+    if (typeof b !== "function" && b !== null)
+        throw new TypeError("Class extends value " + String(b) + " is not a constructor or null");
+    extendStatics(d, b);
+    function __() { this.constructor = d; }
+    d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+}
+
+var EventDispatcher = /** @class */ (function () {
+    function EventDispatcher() {
+        this._listeners = {};
+    }
+    EventDispatcher.prototype.addEventListener = function (type, listener) {
+        if (this._listeners === undefined)
+            this._listeners = {};
+        var listeners = this._listeners;
+        if (listeners[type] === undefined) {
+            listeners[type] = [];
+        }
+        if (listeners[type].indexOf(listener) === -1) {
+            listeners[type].push(listener);
+        }
+    };
+    EventDispatcher.prototype.hasEventListener = function (type, listener) {
+        if (this._listeners === undefined)
+            return false;
+        var listeners = this._listeners;
+        return listeners[type] !== undefined && listeners[type].indexOf(listener) !== -1;
+    };
+    EventDispatcher.prototype.removeEventListener = function (type, listener) {
+        if (this._listeners === undefined)
+            return;
+        var listeners = this._listeners;
+        var listenerArray = listeners[type];
+        if (listenerArray !== undefined) {
+            var index = listenerArray.indexOf(listener);
+            if (index !== -1) {
+                listenerArray.splice(index, 1);
+            }
+        }
+    };
+    EventDispatcher.prototype.dispatchEvent = function (event) {
+        if (this._listeners === undefined)
+            return;
+        var listeners = this._listeners;
+        var listenerArray = listeners[event.type];
+        if (listenerArray !== undefined) {
+            event.target = this;
+            // Make a copy, in case listeners are removed while iterating.
+            var array = listenerArray.slice(0);
+            for (var i = 0, l = array.length; i < l; i++) {
+                array[i].call(this, event);
+            }
+            event.target = null;
+        }
+    };
+    return EventDispatcher;
+}());
+
+var ImageAsset = /** @class */ (function () {
+    function ImageAsset(name, data) {
+        this.data = data;
+        this.name = name;
+    }
+    Object.defineProperty(ImageAsset.prototype, "width", {
+        get: function () {
+            return this.data.width;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Object.defineProperty(ImageAsset.prototype, "height", {
+        get: function () {
+            return this.data.height;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    return ImageAsset;
+}());
+var ImageAssetLoader = /** @class */ (function () {
+    function ImageAssetLoader() {
+    }
+    Object.defineProperty(ImageAssetLoader.prototype, "supportedExtensions", {
+        get: function () {
+            return ["png", "jpg", "jpeg"];
+        },
+        enumerable: false,
+        configurable: true
+    });
+    ImageAssetLoader.prototype.loadAsset = function (assetName, onComplete) {
+        var image = new Image();
+        image.onload = function () {
+            var asset = new ImageAsset(assetName, image);
+            AssetManager.onAssetLoaded(asset);
+            onComplete(asset);
+        };
+        image.src = assetName;
+    };
+    return ImageAssetLoader;
+}());
+
+var AssetManager = /** @class */ (function (_super) {
+    __extends(AssetManager, _super);
+    function AssetManager() {
+        return _super.call(this) || this;
+    }
+    AssetManager.initialize = function () {
+        AssetManager._loaders.push(new ImageAssetLoader());
+    };
+    AssetManager.registerLoader = function (loader) {
+        AssetManager._loaders.push(loader);
+    };
+    AssetManager.loadAsset = function (assetName, onComplete) {
+        if (this._loaderAssets[assetName]) {
+            if (onComplete) {
+                onComplete(this._loaderAssets[assetName]);
+            }
+            return;
+        }
+        var extension = assetName.split(".").pop().toLowerCase();
+        for (var _i = 0, _a = AssetManager._loaders; _i < _a.length; _i++) {
+            var loader = _a[_i];
+            if (loader.supportedExtensions.indexOf(extension) !== -1) {
+                loader.loadAsset(assetName, onComplete);
+                return;
+            }
+        }
+        console.warn("Unable to load asset with extension " + extension + "because there is no loader associated with it.");
+    };
+    AssetManager.onAssetLoaded = function (asset) {
+        AssetManager._loaderAssets[asset.name] = asset;
+    };
+    AssetManager.isAssetLoaded = function (assetName) {
+        return AssetManager._loaderAssets[assetName] !== undefined;
+    };
+    AssetManager.getAsset = function (assetName) {
+        if (AssetManager._loaderAssets[assetName] != undefined) {
+            return AssetManager._loaderAssets[assetName];
+        }
+        return undefined;
+    };
+    AssetManager._loaders = [];
+    AssetManager._loaderAssets = {};
+    return AssetManager;
+}(EventDispatcher));
+
+var Texture = /** @class */ (function () {
+    function Texture() {
+        this._id = 0;
+        this._id = gl.createTexture();
+        if (!this._id) {
+            console.error("Failed to create the texture buffer");
+        }
+    }
+    Object.defineProperty(Texture.prototype, "id", {
+        get: function () {
+            return this._id;
+        },
+        enumerable: false,
+        configurable: true
+    });
+    Texture.prototype.load = function (image) {
+        gl.bindTexture(gl.TEXTURE_2D, this._id);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE);
+        gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+        gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGB, gl.RGB, gl.UNSIGNED_BYTE, image);
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    };
+    Texture.prototype.bind = function (uint) {
+        if (uint === void 0) { uint = 0; }
+        gl.activeTexture(gl.TEXTURE0 + uint);
+        gl.bindTexture(gl.TEXTURE_2D, this._id);
+    };
+    Texture.prototype.unbind = function () {
+        gl.bindTexture(gl.TEXTURE_2D, null);
+    };
+    Texture.prototype.destory = function () {
+        gl.deleteTexture(this._id);
+        this._id = 0;
+    };
+    return Texture;
+}());
+
+var TextureReference = /** @class */ (function () {
+    function TextureReference(texture) {
+        this.referenceCount = 1;
+        this.texture = texture;
+    }
+    return TextureReference;
+}());
+var TextureManager = /** @class */ (function () {
+    function TextureManager() {
+    }
+    TextureManager.getTexture = function (textureName) {
+        if (TextureManager._textures[textureName] === undefined) {
+            var texture = new Texture();
+            texture.load(AssetManager.getAsset(textureName).data);
+            TextureManager._textures[textureName] = new TextureReference(texture);
+        }
+        else {
+            TextureManager._textures[textureName].referenceCount++;
+        }
+        return TextureManager._textures[textureName].texture;
+    };
+    TextureManager.releaseTexture = function (textureName) {
+        if (TextureManager._textures[textureName] === undefined) {
+            console.warn("A texture named ".concat(textureName, " does not exist and therefore cannot be released."));
+        }
+        else {
+            TextureManager._textures[textureName].referenceCount--;
+            if (TextureManager._textures[textureName].referenceCount < 1) {
+                TextureManager._textures[textureName].texture.destory();
+                TextureManager._textures[textureName] = null;
+                delete TextureManager._textures[textureName];
+            }
+        }
+    };
+    TextureManager._textures = {};
+    return TextureManager;
+}());
+
+export { AssetManager, Matrix4, Mesh, Shader, TextureManager, Vector3, VertexBuffer, VertexFormat, VertexSemantic, canvas, gl, init };
 //# sourceMappingURL=start3d.module.js.map

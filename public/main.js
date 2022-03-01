@@ -1,13 +1,18 @@
-let mvpMatrix,viewProjMatrix,currentAngle = 0.0;
+let mvpMatrix,
+viewProjMatrix,
+currentAngle = 0.0,
+texture = "./assets/images/box_diffuse.jpg",
+glTexture;
 const main = async () => {
     Start3d.init();
     let shader = new Start3d.Shader("shader");
-    let vs = await loadFile("./basic.vs"),
-        fs = await loadFile("./basic.fs");
+    let vs = await loadFile("./texture.vs"),
+        fs = await loadFile("./texture.fs");
     shader.load(vs, fs);
     shader.use();
-    shader.mapAttributeSemantic(Start3d.VertexSemantic.POSITION, "a_Position")
-    shader.mapAttributeSemantic(Start3d.VertexSemantic.COLOR, "a_Color")
+    shader.mapAttributeSemantic(Start3d.VertexSemantic.POSITION, "a_Position");
+    shader.mapAttributeSemantic(Start3d.VertexSemantic.COLOR, "a_Color");  
+    shader.mapAttributeSemantic(Start3d.VertexSemantic.UV0, 'a_TexCoord');  
 
     let mesh = createMesh();
     viewProjMatrix = new Start3d.Matrix4();
@@ -18,19 +23,23 @@ const main = async () => {
 
 
     Start3d.gl.enable(Start3d.gl.DEPTH_TEST);
-
-    var tick = function () {   
-        draw(mesh,shader);
-        requestAnimationFrame(tick);
-    };
-
-    tick();
+    Start3d.AssetManager.initialize();
+    Start3d.AssetManager.loadAsset(texture,()=>{
+        glTexture = Start3d.TextureManager.getTexture(texture);
+        var tick = function () {   
+            draw(mesh,shader);
+            requestAnimationFrame(tick);
+        };
+    
+        tick();
+    });
 }
 
 function createMesh() {
     let format = new Start3d.VertexFormat();
     format.addAttrib(Start3d.VertexSemantic.POSITION, 3);
     format.addAttrib(Start3d.VertexSemantic.COLOR, 3);
+    format.addAttrib(Start3d.VertexSemantic.UV0, 2);
     // Create a cube
     //    v6----- v5
     //   /|      /|
@@ -50,6 +59,21 @@ function createMesh() {
         -1.0, 1.0, -1.0,   // v6 Blue
         -1.0, -1.0, -1.0   // v7 Black
     ];
+
+    let UVs = [
+        //v0-v1-v2-v3 front
+        1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
+        //v0-v3-v4-v5 right
+        0.0, 1.0, 0.0, 0.0, 1.0, 0.0, 1.0, 1.0,
+        //v0-v5-v6-v1 top
+        1.0, 0.0, 1.0, 1.0, 0.0, 1.0, 0.0, 0.0,
+        //v1-v6-v7-v2 left
+        1.0, 1.0, 0.0, 1.0, 0.0, 0.0, 1.0, 0.0,
+        //v7-v4-v3-v2 bottom
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0,
+        //v4-v7-v6-v5 back
+        0.0, 0.0, 1.0, 0.0, 1.0, 1.0, 0.0, 1.0
+    ]
 
     let colors = [
         1.0, 1.0, 1.0,
@@ -74,6 +98,7 @@ function createMesh() {
 
     mesh.setVertexData(Start3d.VertexSemantic.POSITION, vertices);
     mesh.setVertexData(Start3d.VertexSemantic.COLOR, colors);
+    mesh.setVertexData(Start3d.VertexSemantic.UV0,UVs);
 
     mesh.setTriangles(indices);
     mesh.upload();
@@ -91,6 +116,7 @@ function loadFile(url){
 }
 
 function draw(mesh,shader){
+    glTexture.bind();
     currentAngle += 1;
     let g_MvpMatrix = new Start3d.Matrix4();
     g_MvpMatrix.set(viewProjMatrix);
@@ -101,4 +127,5 @@ function draw(mesh,shader){
     shader.setUniform("u_MvpMatrix",g_MvpMatrix.elements);
 
     mesh.render(shader);
+    glTexture.unbind();
 }

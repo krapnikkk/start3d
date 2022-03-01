@@ -15,7 +15,7 @@ export class TextureManager {
     public static getTexture(textureName:string):Texture{
         if(TextureManager._textures[textureName]===undefined){
             let texture = new Texture();
-            texture.load(AssetManager.getAsset[textureName]);
+            texture.load(AssetManager.getAsset(textureName).data);
             TextureManager._textures[textureName] = new TextureReference(texture);
         }else{
             TextureManager._textures[textureName].referenceCount++;

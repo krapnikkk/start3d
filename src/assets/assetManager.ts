@@ -1,13 +1,6 @@
 import { EventDispatcher } from "../event/eventDispatcher";
 import { ImageAssetLoader } from "./imageLoader";
 
-enum AssetType {
-    TEXT = "text",
-    IMAGE = "image"
-}
-
-
-
 export interface IAsset{
     readonly name:string;
     readonly data:any;
@@ -50,6 +43,10 @@ export class AssetManager extends EventDispatcher{
                 }
             }
             console.warn("Unable to load asset with extension "+extension+"because there is no loader associated with it.")
+        }
+
+        public static onAssetLoaded(asset:IAsset):void{
+            AssetManager._loaderAssets[asset.name] = asset;
         }
 
         public static isAssetLoaded(assetName: string): boolean {

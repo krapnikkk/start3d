@@ -107,4 +107,52 @@ declare class Vector3 {
     static get one(): Vector3;
     static distance(a: Vector3, b: Vector3): number;
 }
-export { init, gl, canvas, Shader, VertexFormat, VertexSemantic, VertexBuffer, Mesh, Matrix4, Vector3 };
+/**
+ * https://github.com/mrdoob/eventdispatcher.js/
+ */
+interface IEvent {
+    readonly type: string;
+    readonly data: any;
+    target: any;
+}
+declare class EventDispatcher {
+    private _listeners;
+    addEventListener(type: string, listener: Function): void;
+    hasEventListener(type: string, listener: Function): boolean;
+    removeEventListener(type: string, listener: Function): void;
+    dispatchEvent(event: IEvent): void;
+}
+interface IAsset {
+    readonly name: string;
+    readonly data: any;
+}
+interface IAssetLoader {
+    readonly supportedExtensions: string[];
+    loadAsset(assetName: string, callback: (res: IAsset) => {}): void;
+}
+declare class AssetManager extends EventDispatcher {
+    private static _loaders;
+    private static _loaderAssets;
+    private constructor();
+    static initialize(): void;
+    static registerLoader(loader: IAssetLoader): void;
+    static loadAsset(assetName: string, onComplete: (res: IAsset) => {}): void;
+    static onAssetLoaded(asset: IAsset): void;
+    static isAssetLoaded(assetName: string): boolean;
+    static getAsset(assetName: string): IAsset;
+}
+declare class Texture {
+    private _id;
+    constructor();
+    get id(): WebGLTexture;
+    load(image: HTMLImageElement): void;
+    bind(uint?: number): void;
+    unbind(): void;
+    destory(): void;
+}
+declare class TextureManager {
+    private static _textures;
+    static getTexture(textureName: string): Texture;
+    static releaseTexture(textureName: string): void;
+}
+export { init, gl, canvas, Shader, VertexFormat, VertexSemantic, VertexBuffer, Mesh, Matrix4, Vector3, AssetManager, TextureManager };

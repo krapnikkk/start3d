@@ -5,3 +5,6 @@ export { VertexBuffer } from "./gl/vertexBuffer";
 export { Mesh } from "./gl/mesh";
 export { Matrix4 } from "./math/matrix4";
 export { Vector3 } from "./math/vector3";
+
+export {AssetManager} from "./assets/assetManager";
+export {TextureManager} from "./gl/textureManger";
