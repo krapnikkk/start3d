@@ -1,5 +1,6 @@
 import { EventDispatcher } from "../event/eventDispatcher";
 import { ImageAssetLoader } from "./imageLoader";
+import { TextAssetLoader } from "./textLoader";
 
 export interface IAsset{
     readonly name:string;
@@ -22,6 +23,7 @@ export class AssetManager extends EventDispatcher{
 
         public static initialize(): void {
             AssetManager._loaders.push(new ImageAssetLoader());
+            AssetManager._loaders.push(new TextAssetLoader());
         }
 
         public static registerLoader(loader: IAssetLoader): void {
