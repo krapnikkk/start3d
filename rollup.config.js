@@ -1,5 +1,4 @@
 import ts from 'rollup-plugin-ts';
-import copy from 'rollup-plugin-copy'
 
 export default [
   {
@@ -7,16 +6,16 @@ export default [
     output: {
       format: 'umd',
       name: 'Start3d',
-      file: 'dist/start3d.umd.js',
+      file: 'build/start3d.umd.js',
       sourcemap: true
     },
     plugins: [
       ts(),
-      copy({
-        targets: [
-          { src: 'public/*', dest: 'dist' },
-        ]
-      })
+      // copy({
+      //   targets: [
+      //     { src: 'public/*', dest: 'build' },
+      //   ]
+      // })
     ]
   },
   {

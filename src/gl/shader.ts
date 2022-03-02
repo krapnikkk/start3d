@@ -25,7 +25,7 @@ export class Shader {
         this._semanticToAttribMap[semantic] = attribName;
     }
 
-    protected load(vertexSource: string, fragmentSource: string) {
+    public load(vertexSource: string, fragmentSource: string) {
         let vertexShader = this.loadShader(vertexSource, gl.VERTEX_SHADER);
         let fragmentShader = this.loadShader(fragmentSource, gl.FRAGMENT_SHADER);
         this.createProgram(vertexShader, fragmentShader);

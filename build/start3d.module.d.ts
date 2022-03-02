@@ -7,7 +7,7 @@ declare class Shader {
     private _uniforms;
     private _semanticToAttribMap;
     mapAttributeSemantic(semantic: string, attribName: string): void;
-    protected load(vertexSource: string, fragmentSource: string): void;
+    load(vertexSource: string, fragmentSource: string): void;
     private loadShader;
     private createProgram;
     queryAttributes(): void;
@@ -128,7 +128,7 @@ interface IAsset {
 }
 interface IAssetLoader {
     readonly supportedExtensions: string[];
-    loadAsset(assetName: string, callback: (res: IAsset) => {}): void;
+    loadAsset(assetName: string, callback: (res: IAsset) => void): void;
 }
 declare class AssetManager extends EventDispatcher {
     private static _loaders;
@@ -136,8 +136,8 @@ declare class AssetManager extends EventDispatcher {
     private constructor();
     static initialize(): void;
     static registerLoader(loader: IAssetLoader): void;
-    static loadAsset(assetName: string, onComplete: (res: IAsset) => {}): void;
-    static onAssetLoaded(asset: IAsset): void;
+    static loadAsset(assetName: string, onComplete: (asset?: IAsset) => void): void;
+    static loadAssetList(assetList: string[], onAllComplete: () => void): void;
     static isAssetLoaded(assetName: string): boolean;
     static getAsset(assetName: string): IAsset;
 }

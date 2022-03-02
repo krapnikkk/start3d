@@ -1112,12 +1112,44 @@ var ImageAssetLoader = /** @class */ (function () {
         var image = new Image();
         image.onload = function () {
             var asset = new ImageAsset(assetName, image);
-            AssetManager.onAssetLoaded(asset);
             onComplete(asset);
         };
         image.src = assetName;
     };
     return ImageAssetLoader;
+}());
+
+var TextAsset = /** @class */ (function () {
+    function TextAsset(name, data) {
+        this.data = data;
+        this.name = name;
+    }
+    return TextAsset;
+}());
+var TextAssetLoader = /** @class */ (function () {
+    function TextAssetLoader() {
+    }
+    Object.defineProperty(TextAssetLoader.prototype, "supportedExtensions", {
+        get: function () {
+            return ["txt", "vs", "fs", "frag", "vert", "shader"];
+        },
+        enumerable: false,
+        configurable: true
+    });
+    TextAssetLoader.prototype.loadAsset = function (assetName, onComplete) {
+        var request = new XMLHttpRequest();
+        request.onreadystatechange = function () {
+            if (request.readyState === XMLHttpRequest.DONE && request.status !== 404) {
+                var asset = new TextAsset(assetName, request.responseText);
+                if (onComplete) {
+                    onComplete(asset);
+                }
+            }
+        };
+        request.open("GET", assetName, true);
+        request.send();
+    };
+    return TextAssetLoader;
 }());
 
 var AssetManager = /** @class */ (function (_super) {
@@ -1127,6 +1159,7 @@ var AssetManager = /** @class */ (function (_super) {
     }
     AssetManager.initialize = function () {
         AssetManager._loaders.push(new ImageAssetLoader());
+        AssetManager._loaders.push(new TextAssetLoader());
     };
     AssetManager.registerLoader = function (loader) {
         AssetManager._loaders.push(loader);
@@ -1142,14 +1175,36 @@ var AssetManager = /** @class */ (function (_super) {
         for (var _i = 0, _a = AssetManager._loaders; _i < _a.length; _i++) {
             var loader = _a[_i];
             if (loader.supportedExtensions.indexOf(extension) !== -1) {
-                loader.loadAsset(assetName, onComplete);
+                loader.loadAsset(assetName, function (res) {
+                    AssetManager._loaderAssets[res.name] = res;
+                    onComplete(res);
+                });
                 return;
             }
         }
         console.warn("Unable to load asset with extension " + extension + "because there is no loader associated with it.");
     };
-    AssetManager.onAssetLoaded = function (asset) {
-        AssetManager._loaderAssets[asset.name] = asset;
+    AssetManager.loadAssetList = function (assetList, onAllComplete) {
+        var remainCount = assetList.length;
+        var _loop_1 = function (i) {
+            var name_1 = assetList[i];
+            this_1.loadAsset(name_1, function (asset) {
+                console.log(asset);
+                if (asset) {
+                    remainCount--;
+                    if (remainCount === 0 && onAllComplete) {
+                        onAllComplete();
+                    }
+                }
+                else {
+                    console.error('fail to load asset ' + name_1);
+                }
+            });
+        };
+        var this_1 = this;
+        for (var i = 0; i < remainCount; i++) {
+            _loop_1(i);
+        }
     };
     AssetManager.isAssetLoaded = function (assetName) {
         return AssetManager._loaderAssets[assetName] !== undefined;

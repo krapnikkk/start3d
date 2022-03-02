@@ -4,18 +4,26 @@
   "description": "Let's start making a 3d renderer in WebGL!",
   "main": "index.js",
   "scripts": {
-    "build": "rm -rf dist && rollup -c",
+    "build": "rm -rf build & rollup -c",
+    "example": "rm -rf dist & cross-env NODE_ENV=production webpack --mode production",
     "watch": "rollup -c --watch",
-    "uml":"tsviz-cli src/ diagran.png"
+    "serve": "cross-env NODE_ENV=development webpack-dev-server --watch-poll",
+    "uml": "tsviz-cli src/ diagran.png"
   },
   "keywords": [],
   "author": "krapnik",
   "license": "ISC",
   "devDependencies": {
+    "copy-webpack-plugin": "^6.4.1",
+    "cross-env": "^7.0.3",
+    "html-webpack-plugin": "^4.3.0",
     "rollup": "^2.64.0",
-    "rollup-plugin-copy": "^3.4.0",
     "rollup-plugin-ts": "^2.0.5",
-    "typescript": "^4.5.4"
+    "ts-loader": "^8.2.0",
+    "typescript": "^4.5.4",
+    "webpack": "^4.44.1",
+    "webpack-cli": "^3.3.12",
+    "webpack-dev-server": "^3.11.0"
   },
   "dependencies": {}
 }

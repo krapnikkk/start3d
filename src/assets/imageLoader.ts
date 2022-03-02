@@ -1,4 +1,4 @@
-import { AssetManager, IAsset, IAssetLoader } from "./assetManager";
+import { IAsset, IAssetLoader } from "./assetManager";
 
 
 export class ImageAsset implements IAsset {
@@ -22,11 +22,10 @@ export class ImageAssetLoader implements IAssetLoader {
         return ["png", "jpg", "jpeg"];
     }
 
-    loadAsset(assetName: string,onComplete:(res:IAsset)=>{}): void {
+    loadAsset(assetName: string,onComplete:(res:IAsset)=>void): void {
         let image: HTMLImageElement = new Image();
         image.onload = ()=>{
             let asset = new ImageAsset(assetName,image);
-            AssetManager.onAssetLoaded(asset);
             onComplete(asset);
         };
         image.src = assetName;

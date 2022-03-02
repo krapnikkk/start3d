@@ -15,13 +15,12 @@ export class TextAssetLoader implements IAssetLoader {
         return ["txt","vs","fs","frag","vert","shader"];
     }
 
-    loadAsset(assetName: string,onComplete?:(res:IAsset)=>{}): void {
+    loadAsset(assetName: string,onComplete?:(res:IAsset)=>void): void {
         let request = new XMLHttpRequest();
         request.onreadystatechange = ()=>{
             if(request.readyState === XMLHttpRequest.DONE && request.status !== 404){
                 let asset = new TextAsset(assetName,request.responseText);
                 if(onComplete){
-                    AssetManager.onAssetLoaded(asset);
                     onComplete(asset);
                 }
             }
